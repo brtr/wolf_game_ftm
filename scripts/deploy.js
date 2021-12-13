@@ -1,24 +1,14 @@
-const traits = require("../data.json");
-const { UNISWAP_ROUTER, OWNER_ADDRESS } = process.env;
+const { OWNER_ADDRESS } = process.env;
 const main = async () => {
   let contractFactory = await hre.ethers.getContractFactory('Traits');
   const traitContract = await contractFactory.deploy();
   await traitContract.deployed();
   console.log("Trait Contract deployed to:", traitContract.address);
 
-  for (const trait of traits) {
-    const traitIds = [...Array(trait.data.length).keys()];
-    await traitContract.uploadTraits(trait.id, traitIds, trait.data);
-  }
-  console.log("Uploaded Traits Data");
-
   contractFactory = await hre.ethers.getContractFactory('WOOL');
   const woolContract = await contractFactory.deploy();
   await woolContract.deployed();
   console.log("Wool Contract deployed to:", woolContract.address);
-
-  await woolContract.approve(UNISWAP_ROUTER, 999999999999);
-  console.log("set approve for wool success");
 
   contractFactory = await hre.ethers.getContractFactory('WEED');
   const weedContract = await contractFactory.deploy();
@@ -30,12 +20,6 @@ const main = async () => {
   await chefContract.deployed();
   console.log("Masterchef Contract deployed to:", chefContract.address);
 
-  await weedContract.addMinter(chefContract.address);
-  console.log("set minter for weed success");
-
-  await weedContract.approve(chefContract.address, 999999999999);
-  console.log("set approve for weed success");
-
   contractFactory = await hre.ethers.getContractFactory('Woolf');
   const woolfContract = await contractFactory.deploy(woolContract.address, traitContract.address, 1000000);
   await woolfContract.deployed();
@@ -45,13 +29,6 @@ const main = async () => {
   const barnContract = await contractFactory.deploy(woolfContract.address, woolContract.address);
   await barnContract.deployed();
   console.log("Barn Contract deployed to:", barnContract.address);
-
-  await traitContract.setWoolf(woolfContract.address);
-  console.log("set woolf success");
-  await woolfContract.setBarn(barnContract.address);
-  console.log("set barn for woolf success");
-  await woolContract.addController(barnContract.address);
-  console.log("set barn for wool success");
 };
 
 const runMain = async () => {
