@@ -2,7 +2,7 @@ require('dotenv').config();
 require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-etherscan");
 
-const { API_URL, PRIVATE_KEY, API_KEY } = process.env;
+const { TEST_API_URL, API_URL, PRIVATE_KEY, API_KEY } = process.env;
 
 // You need to export an object to set up your config
 // Go to https://hardhat.org/config/ to learn more
