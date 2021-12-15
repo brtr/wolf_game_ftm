@@ -25,6 +25,11 @@ const { API_URL, PRIVATE_KEY, API_KEY } = process.env;
    },
    networks: {
      rinkeby: {
+       url: TEST_API_URL,
+       accounts: [PRIVATE_KEY],
+     },
+     main: {
+       chainId: 250,
        url: API_URL,
        accounts: [PRIVATE_KEY],
      },
