@@ -141,14 +141,11 @@ contract Woolf is IWoolf, ERC721Enumerable, Ownable, Pausable {
       require(msg.value == 0);
     }
 
-    if (sender != _msgSender()) {
-      minter = sender;
-    }
-
     uint256 totalWoolCost = 0;
     uint16[] memory tokenIds = stake ? new uint16[](amount) : new uint16[](0);
     uint256 seed;
     assignScore = score;
+    minter = sender;
 
     for (uint i = 0; i < amount; i++) {
       minted++;
