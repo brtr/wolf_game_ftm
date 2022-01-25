@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Wolf Game</title>
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.slim.js" integrity="sha256-HwWONEZrpuoh951cQD1ov2HUK5zA5DwJ1DNUXaM6FsY=" crossorigin="anonymous"></script>
+    <script type="module" src="./js/main.js"></script>
+    <link rel="stylesheet" href="./css/main.css" />
+  </head>
+
+  <body>
+    <div id="root">
+      <h1 class="title">Wolf Game</h1>
+      <div class="mb-5 flex flex-col md:flex-row justify-center items-center gap-10 w-full" style="max-width: 1500px;">
+        <div class="h-full w-full md:w-2/5 flex justify-between flex flex-col gap-5">
+          <div class="w-full h-full relative flex p-1 md:p-5 flex justify-center overflow-hidden" style="border-color: black; border-width: 30px; background: rgba(237, 227, 209, 0.8);">
+            <div class="absolute" style="width: 100%; height: 100%; top: -20px; left: -20px; opacity: 0.08;"></div>
+            <div class="w-full h-full z-index:5 relative">
+              <div class="flex flex-col items-center font-pixel gap-5">
+                <div class="subtitle mt-5">MINTING</div>
+                <div class="w-full flex flex-col justify-center items-center">
+                  <div class="w-full relative" style="height: 48px; border: 8px solid black;">
+                    <div id="mintedPercent" class="bg-red" style="width: 0%; height: 100%;"></div>
+                    <div class="flex justify-center items-center font-console text-xs text-center pt-1" style="position: absolute; top: 0px; left: 0px; width: 20%; height: 100%; border-right: 4px solid rgb(122, 122, 122);">GEN 0</div>
+                    <div class="flex justify-center items-center font-console text-xs text-center pt-1" style="position: absolute; top: 0px; left: 20%; border-right: 4px solid rgb(122, 122, 122); width: 20%; height: 100%;">20,000 $WOOL</div>
+                    <div class="flex justify-center items-center font-console text-xs text-center pt-1" style="position: absolute; top: 0px; left: 40%; border-right: 4px solid rgb(122, 122, 122); width: 40%; height: 100%;">40,000 $WOOL</div>
+                    <div class="flex justify-center items-center font-console text-xs text-center pt-1" style="position: absolute; top: 0px; left: 80%; width: 20%; height: 100%;">80,000 $WOOL</div>
+                    <div class="font-console mt-2 w-full text-center pt-2"><span id="minted">0</span> / <span id="totalSupply">10000</span> MINTED</div>
+                  </div>
+                </div>
+                <div class="mt-2"></div>
+                <div class="w-full h-full flex flex-col justify-center items-center unconnected">
+                  <div class="relative flex items-center justify-center cursor-pointer" style="border-color: black; border-width: 10px;">
+                    <div class="text-center font-console p-3 connectBtn" style="font-size: 20px;">Connect Metamask</div>
+                  </div>
+                </div>
+                <div class="w-full h-full flex flex-col justify-center items-center connected">
+                  <div class="flex justify-center items-center gap-2" style="height: 50px;">
+                    <div class="font-console text-lg pt-2 mr-3">Amount</div>
+                    <img src="./images/arrow-down.svg" alt="decrease" class="arrow-down cursor-pointer" id="subBtn" style="min-width: 25px;">
+                    <div class="font-console text-red text-3xl pt-2" id="mintAmount">1</div>
+                    <img src="./images/arrow-up.svg" alt="increase" class="arrow-up cursor-pointer" id="addBtn" style="min-width: 25px;">
+                  </div>
+                  <div class="mb-2">Current Price: <span class="text-red"><span id="mintCost">40000</span> $<span class="mintCostToken">WOOL</span></span></div>
+                  <div class="text-red text-2xl" id="insufficientBalance">Insufficient $WOOL</div>
+                  <div style="font-size: 25px; margin: 1rem auto;" id="totalCostBlock"><span id="totalCost">Insufficient</span>  $ <span class="mintCostToken">WOOL</span></div>
+                  <div class="text-red text-2xl" style="display: none;" id="mintBtnBlock">
+                    <button type="button" class="mintBtn" id="mintBtn"><span>Mint</span></button>
+                    <button type="button" class="mintBtn" id="mintStakeBtn"><span>Mint + Stake</span></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="h-full w-full md:w-2/5 flex justify-center">
+          <div class="w-full h-full relative flex p-1 md:p-5 flex justify-center overflow-hidden" style="border-color: black; border-width: 30px; background: rgba(237, 227, 209, 0.8);">
+            <div class="absolute" style="width: 100%; height: 100%; top: -20px; left: -20px; opacity: 0.08;"></div>
+            <div class="w-full h-full z-index:5 relative">
+              <div class="flex flex-col items-center font-pixel gap-5">
+                <div class="flex justify-between items-center font-console gap-2">
+                  <div>$WOOL in your wallet:</div>
+                  <div><span id="woolBalance">?</span> $WOOL</div>
+                </div>
+                <div class="text-sm font-console flex items-center text-red text-center" style="height: 30px;margin-bottom: -2rem;font-size: 20px;">Select tokens to stake, shear, or unstake</div>
+                <div class="subtitle mt-5">Unstaked</div>
+                <div class="w-full h-full flex flex-col justify-center items-center unconnected">
+                  <div class="relative flex items-center justify-center cursor-pointer" style="border-color: black; border-width: 10px;">
+                    <div class="text-center font-console p-3 connectBtn" style="font-size: 20px;">Connect Metamask</div>
+                  </div>
+                </div>
+                <div class="w-full h-full flex flex-col justify-center items-center connected">
+                  <div class="w-full" style="border-width: 0px 0px 4px 4px; border-bottom-style: solid; border-left-style: solid; border-bottom-color: rgb(42, 35, 30); border-left-color: rgb(42, 35, 30); padding: 2px; opacity: 1;">
+                    <div class="text-red font-console hasUnstakeToken">
+                      TOKENS
+                      <div class="tokens"></div>
+                    </div>
+                    <div class="text-red font-console noUnstakedToken">Can Stake</div>
+                    <div class="text-red font-console text-xs noUnstakedToken">No Tokens</div>
+                  </div>
+                </div>
+                <div class="subtitle mt-5">Staked</div>
+                <div class="w-full h-full flex flex-col justify-center items-center unconnected">
+                  <div class="relative flex items-center justify-center cursor-pointer" style="border-color: black; border-width: 10px;">
+                    <div class="text-center font-console p-3 connectBtn" style="font-size: 20px;">Connect Metamask</div>
+                  </div>
+                </div>
+                <div class="w-full h-full flex flex-col justify-center items-center connected">
+                  <div class="w-full flex flex-col justify-center items-center gap-2">
+                    <div class="w-full" style="border-width: 0px 0px 4px 4px; border-bottom-style: solid; border-left-style: solid; border-bottom-color: rgb(42, 35, 30); border-left-color: rgb(42, 35, 30); padding: 2px; opacity: 1;">
+                      <div class="text-red font-console">BARN</div>
+                      <div class="text-red font-console text-xs hasBarnToken"></div>
+                      <div class="text-red font-console text-xs noBarnToken">No Tokens</div>
+                    </div>
+                    <div class="w-full" style="border-width: 0px 0px 4px 4px; border-bottom-style: solid; border-left-style: solid; border-bottom-color: rgb(42, 35, 30); border-left-color: rgb(42, 35, 30); padding: 2px; opacity: 1;">
+                      <div class="text-red font-console">Wolfpack</div>
+                      <div class="text-red font-console text-xs hasWolfpackToken"></div>
+                      <div class="text-red font-console text-xs noWolfpackToken">No Tokens</div>
+                    </div>
+                    <div class="w-full flex flex-col md:flex-row justify-center items-center gap-1">
+                      <div class="relative flex items-center justify-center cursor-pointer false" style="width: 150px; height: 80px;">
+                        <div class="text-red text-2xl flex" id="stakeBtnBlock">
+                          <button type="button" class="mintBtn" id="claimBtn"><span>SHEAR ALL $WOOL</span></button>
+                          <button type="button" class="mintBtn" id="unStakeBtn"><span>UNSTAKE</span></button>
+                        </div>
+                        <div class="text-red text-2xl" id="unstakeBtnBlock">
+                          <button type="button" class="mintBtn" id="stakeBtn"><span>STAKE</span></button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="loading">
+      <img src="./images/loading.gif">
+    </div>
+  </body>
+</html>
