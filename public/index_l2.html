@@ -78,7 +78,7 @@
                           <div class="font-console text-xs mt-2 text-center" style="height: 20px;">(saves gas)</div>
                         </div>
                         <div class="black-border relative flex items-center justify-center cursor-pointer approveWeedBlock" style="width: 180px; height: 40px; display:none">
-                          <div class="text-center font-console pt-1" style="font-size: 16px;" id="approveWoolfBtn">Approve $WEED</div>
+                          <div class="text-center font-console pt-1" style="font-size: 16px;" id="approveWeedBtn">Approve $WEED</div>
                         </div>
                       </div>
                     </div>
@@ -173,17 +173,13 @@
                 <div style="height: 140px; width: 195px;"><img src="./images/mower.png"></div>
                 <div class="flex flex-col md:flex-row justify-center items-center gap-10 w-full mb-5">
                   <div class="flex flex-col items-center font-pixel gap-5">
-                    <div>POWER IN MY PACK: 0 MAX</div>
-                    <div><input type="number" value="0" style="text-align: center; height: 50px;"></div>
+                    <div>POWER IN MY PACK: <span id="lpBalance"></span> MAX</div>
+                    <div><input type="number" value="0" style="text-align: center; height: 50px;" id="lptoken" /></div>
                     <div class="black-border relative flex items-center justify-center cursor-pointer false" style="width: 200px; height: 50px;">
-                      <div class="text-center font-console pt-1" style="font-size: 15px;" id="approveChefBtn">inject POWER</div>
+                      <div class="text-center font-console pt-1" style="font-size: 15px;" id="approveLpBtn">Approve</div>
                     </div>
-                  </div>
-                  <div class="flex flex-col items-center font-pixel gap-5">
-                    <div>POWER: 0 MAX (position: 0.0%)</div>
-                    <div><input type="number" value="0" style="text-align: center; height: 50px;"></div>
                     <div class="black-border relative flex items-center justify-center cursor-pointer false" style="width: 200px; height: 50px;">
-                      <div class="text-center font-console pt-1" style="font-size: 15px;">take back</div>
+                      <div class="text-center font-console pt-1" style="font-size: 15px;" id="depositBtn">take back</div>
                     </div>
                   </div>
                 </div>

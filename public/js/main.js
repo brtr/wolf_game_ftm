@@ -1,18 +1,19 @@
-import { WoolfAddress, WoolfABI, BarnAddress, BarnABI, WoolAddress, WoolABI, MilkAddress, ChefAddress, WeedAddress, MilkABI, ChefABI, WeedABI } from "./data.js";
+import { WoolfAddress, WoolfABI, BarnAddress, BarnABI, WoolAddress, WoolABI, MilkAddress, ChefAddress, WeedAddress,
+   MilkABI, ChefABI, WeedABI, LpTokenAddress, LpTokenABI } from "./data.js";
 
 (function() {
   let loginAddress = localStorage.getItem("loginAddress");
   let lpPoolId = 0;
   let mintAmount = 1;
+  let tokenType = 0;
+  let pendingWeed = 0;
+  let weedAllowance = 0;
   let unstakedTokens = [];
   let barnTokens = [];
   let wolfPackTokens = [];
   let targetIds = [];
   let targetType = "unstake";
   let payment = "ether";
-  let tokenType = 0;
-  let pendingWeed = 0;
-  let weedAllowance = 0;
   let currentPrice, minted, mintCost, totalCost, balance;
   const TargetChain = {
     id: "4",
@@ -26,12 +27,14 @@ import { WoolfAddress, WoolfABI, BarnAddress, BarnABI, WoolAddress, WoolABI, Mil
   const BarnContract = new ethers.Contract(BarnAddress, BarnABI, provider);
   const barnWithSigner = BarnContract.connect(signer);
   const ChefContract = new ethers.Contract(ChefAddress, ChefABI, provider);
+  const chefWithSigner = ChefContract.connect(signer);
   const WeedContract = new ethers.Contract(WeedAddress, WeedABI, provider);
   const MilkContract = new ethers.Contract(MilkAddress, MilkABI, provider);
+  const LpTokenContract = new ethers.Contract(LpTokenAddress, LpTokenABI, provider);
 
   function fetchErrMsg (err) {
     const errMsg = err.error ? err.error.message : err.message;
-    alert('Error:  ' + errMsg.split(": ")[-1]);
+    alert('Error:  ' + errMsg.split(": ").slice(-1));
     $("#loading").hide();
   }
 
@@ -109,18 +112,25 @@ import { WoolfAddress, WoolfABI, BarnAddress, BarnABI, WoolAddress, WoolABI, Mil
     balance = await WeedContract.balanceOf(loginAddress);
     balance = parseFloat(ethers.utils.formatEther(balance));
     console.log("weed balance is ", balance);
-    $("#weedBalance").text(balance);
+    $("#weedBalance").text(balance.toFixed(4));
+
+    balance = await LpTokenContract.balanceOf(loginAddress);
+    balance = parseFloat(ethers.utils.formatEther(balance));
+    console.log("lp token balance is ", balance);
+    $("#lpBalance").text(balance.toFixed(4));
 
     balance = await MilkContract.balanceOf(loginAddress);
     balance = parseFloat(ethers.utils.formatEther(balance));
     console.log("milk balance is ", balance);
-    $("#milkBalance").text(balance);
+    $("#milkBalance").text(balance.toFixed(4));
 
     pendingWeed = await ChefContract.pendingweed(lpPoolId, loginAddress);
+    pendingWeed = parseFloat(ethers.utils.formatEther(pendingWeed));
     console.log("pending weed is ", pendingWeed);
-    $("#pendingWeed").text(pendingWeed);
+    $("#pendingWeed").text(pendingWeed.toFixed(4));
 
     weedAllowance = await WeedContract.allowance(loginAddress, WoolfAddress);
+    weedAllowance = parseFloat(ethers.utils.formatEther(weedAllowance));
     console.log("weed allowance is ", weedAllowance);
   }
 
@@ -238,12 +248,19 @@ import { WoolfAddress, WoolfABI, BarnAddress, BarnABI, WoolAddress, WoolABI, Mil
     }
   }
 
-  const weedApprove = async function(type) {
+  const approve = async function(type) {
     try {
       $("#loading").show();
-      const weedWithSigner = WeedContract.connect(signer);
-      const targetAddress = type == "woolf" ? WoolfAddress : ChefAddress;
-      const tx = await weedWithSigner.approve(targetAddress,  ethers.utils.parseUnits("100000000000", "ether"));
+      let contractWithSigner, targetAddress;
+      if (type == "weed") {
+        contractWithSigner = WeedContract.connect(signer);
+        targetAddress = WoolfAddress;
+      } else {
+        contractWithSigner = LpTokenContract.connect(signer);
+        targetAddress = ChefAddress;
+      }
+
+      const tx = await contractWithSigner.approve(targetAddress, ethers.utils.parseUnits("100000000000", "ether"));
       console.log("sending tx, ", tx);
       await tx.wait();
       console.log("received tx ", tx);
@@ -303,8 +320,22 @@ import { WoolfAddress, WoolfABI, BarnAddress, BarnABI, WoolAddress, WoolABI, Mil
   const withdraw = async function() {
     try {
       $("#loading").show();
-      const chefWithSigner = ChefContract.connect(signer);
       const tx = await chefWithSigner.withdraw(lpPoolId, 0);
+      console.log("sending tx, ", tx);
+      await tx.wait();
+      console.log("received tx ", tx);
+      getInfo();
+    } catch (err) {
+      fetchErrMsg(err);
+    }
+  }
+
+  const deposit = async function() {
+    try {
+      $("#loading").show();
+      const lptoken = $("#lptoken").val();
+      const chefWithSigner = ChefContract.connect(signer);
+      const tx = await chefWithSigner.deposit(lpPoolId, ethers.utils.parseUnits(lptoken, "ether"));
       console.log("sending tx, ", tx);
       await tx.wait();
       console.log("received tx ", tx);
@@ -361,12 +392,12 @@ import { WoolfAddress, WoolfABI, BarnAddress, BarnABI, WoolAddress, WoolABI, Mil
       }
     })
 
-    $("#approveWoolfBtn").click(function() {
-      weedApprove("woolf");
+    $("#approveWeedBtn").click(function() {
+      approve("weed");
     })
 
-    $("#approveChefBtn").click(function() {
-      weedApprove("chef");
+    $("#approveLpBtn").click(function() {
+      approve("lptoken");
     })
 
     $("#mintBtn").click(function() {
@@ -391,6 +422,10 @@ import { WoolfAddress, WoolfABI, BarnAddress, BarnABI, WoolAddress, WoolABI, Mil
 
     $("#withdrawBtn").click(function() {
       withdraw();
+    })
+
+    $("#depositBtn").click(function() {
+      deposit();
     })
 
     $(document).on("click", ".tokenIcons", function() {
