@@ -34,6 +34,7 @@ const main = async () => {
   await weedContract.approve(CHEF_ADDRESS, 9999999);
   console.log("set approve for weed success");
   await woolfContract.setBarn(BARN_ADDRESS);
+  await woolfContract.setWeed(WEED_ADDRESS);
   await woolfContract.setRandomizer(RANDOM_ADDRESS);
   console.log("set barn for woolf success");
   await chefContract.add(100, LP_ADDRESS, 0, false)

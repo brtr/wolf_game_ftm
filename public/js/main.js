@@ -264,10 +264,11 @@ import { WoolfAddress, WoolfABI, BarnAddress, BarnABI, WoolAddress, WoolABI, Mil
       console.log("sending tx, ", tx);
       await tx.wait();
       console.log("received tx ", tx);
-      getInfo();
+      location.reload();
     } catch (err) {
       console.log(err);
       fetchErrMsg(err);
+      location.reload();
     }
   }
 
@@ -283,10 +284,11 @@ import { WoolfAddress, WoolfABI, BarnAddress, BarnABI, WoolAddress, WoolABI, Mil
       console.log("sending tx, ", tx);
       await tx.wait();
       console.log("received tx ", tx);
-      getInfo();
+      location.reload();
     } catch (err) {
       console.log(err);
       fetchErrMsg(err);
+      location.reload();
     }
   }
 
@@ -297,10 +299,11 @@ import { WoolfAddress, WoolfABI, BarnAddress, BarnABI, WoolAddress, WoolABI, Mil
       console.log("sending tx, ", tx);
       await tx.wait();
       console.log("received tx ", tx);
-      getInfo();
+      location.reload();
     } catch (err) {
       console.log(err);
       fetchErrMsg(err);
+      location.reload();
     }
   }
 
@@ -311,10 +314,11 @@ import { WoolfAddress, WoolfABI, BarnAddress, BarnABI, WoolAddress, WoolABI, Mil
       console.log("sending tx, ", tx);
       await tx.wait();
       console.log("received tx ", tx);
-      getInfo();
+      location.reload();
     } catch (err) {
       fetchErrMsg(err);
     }
+    location.reload();
   }
 
   const withdraw = async function() {
@@ -324,10 +328,11 @@ import { WoolfAddress, WoolfABI, BarnAddress, BarnABI, WoolAddress, WoolABI, Mil
       console.log("sending tx, ", tx);
       await tx.wait();
       console.log("received tx ", tx);
-      getInfo();
+      location.reload();
     } catch (err) {
       fetchErrMsg(err);
     }
+    location.reload();
   }
 
   const deposit = async function() {
@@ -339,10 +344,11 @@ import { WoolfAddress, WoolfABI, BarnAddress, BarnABI, WoolAddress, WoolABI, Mil
       console.log("sending tx, ", tx);
       await tx.wait();
       console.log("received tx ", tx);
-      getInfo();
+      location.reload();
     } catch (err) {
       fetchErrMsg(err);
     }
+    location.reload();
   }
 
   const toggleStakeBtns = function() {
@@ -458,10 +464,11 @@ import { WoolfAddress, WoolfABI, BarnAddress, BarnABI, WoolAddress, WoolABI, Mil
         localStorage.removeItem("loginAddress");
         loginAddress = null;
       }
-      getInfo();
+      location.reload();
       toggleBlock();
     });
 
+    location.reload();
     // detect Network account change
     ethereum.on('chainChanged', function(networkId){
       console.log('networkChanged',networkId);
