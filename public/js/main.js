@@ -14,7 +14,7 @@ import { WoolfAddress, WoolfABI, BarnAddress, BarnABI, WoolAddress, WoolABI, Mil
   let targetIds = [];
   let targetType = "unstake";
   let payment = "ether";
-  let currentPrice, minted, mintCost, totalCost, balance;
+  let currentPrice, minted, mintCost, totalCost, balance, milkBalance;
   const TargetChain = {
     id: "4",
     name: "rinkeby"
@@ -86,6 +86,33 @@ import { WoolfAddress, WoolfABI, BarnAddress, BarnABI, WoolAddress, WoolABI, Mil
     toggleBlock();
   }
 
+  const getMintCost = async function() {
+    mintCost = await WoolfContract.mintCost(minted + 1);
+    mintCost = parseFloat(ethers.utils.formatEther(mintCost));
+    console.log("mint cost is ", mintCost);
+    $("#loading").hide();
+
+    if (mintCost > 0) {
+      $("#mintCost").text(mintCost);
+      $(".mintCostToken").text("MILK");
+      if (milkBalance > mintCost) {
+        $("#mintBtnBlock").show();
+        $("#totalCostBlock").show();
+        $("#insufficientBalance").hide();
+      } else {
+        $("#mintBtnBlock").hide();
+        $("#totalCostBlock").hide();
+        $("#insufficientBalance").show();
+      }
+    } else {
+      $("#mintBtnBlock").show();
+      $("#totalCostBlock").show();
+      $("#insufficientBalance").hide();
+    }
+
+    getTotalCost();
+  }
+
   const getCurrentPrice = async function() {
     if (payment == "wool") {
       currentPrice = await WoolfContract.wool_price();
@@ -99,8 +126,8 @@ import { WoolfAddress, WoolfABI, BarnAddress, BarnABI, WoolAddress, WoolABI, Mil
     }
 
     currentPrice = parseFloat(ethers.utils.formatEther(currentPrice));
-    getTotalCost();
     console.log("current price is ", currentPrice);
+    getMintCost();
   }
 
   const getBalance = async function() {
@@ -119,10 +146,10 @@ import { WoolfAddress, WoolfABI, BarnAddress, BarnABI, WoolAddress, WoolABI, Mil
     console.log("lp token balance is ", balance);
     $("#lpBalance").text(balance.toFixed(4));
 
-    balance = await MilkContract.balanceOf(loginAddress);
-    balance = parseFloat(ethers.utils.formatEther(balance));
-    console.log("milk balance is ", balance);
-    $("#milkBalance").text(balance.toFixed(4));
+    milkBalance = await MilkContract.balanceOf(loginAddress);
+    milkBalance = parseFloat(ethers.utils.formatEther(milkBalance));
+    console.log("milk balance is ", milkBalance);
+    $("#milkBalance").text(milkBalance.toFixed(4));
 
     pendingWeed = await ChefContract.pendingweed(lpPoolId, loginAddress);
     pendingWeed = parseFloat(ethers.utils.formatEther(pendingWeed));
@@ -132,6 +159,8 @@ import { WoolfAddress, WoolfABI, BarnAddress, BarnABI, WoolAddress, WoolABI, Mil
     weedAllowance = await WeedContract.allowance(loginAddress, WoolfAddress);
     weedAllowance = parseFloat(ethers.utils.formatEther(weedAllowance));
     console.log("weed allowance is ", weedAllowance);
+
+    getMintCost();
   }
 
   const getInfo = async function() {
@@ -154,39 +183,15 @@ import { WoolfAddress, WoolfABI, BarnAddress, BarnABI, WoolAddress, WoolABI, Mil
 
     getCurrentPrice();
 
-    mintCost = await WoolfContract.mintCost(minted + 1);
-    mintCost = parseFloat(ethers.utils.formatEther(mintCost));
-    console.log("mint cost is ", mintCost);
-
-    if (mintCost > 0) {
-      $("#mintCost").text(mintCost);
-      if (balance > mintCost) {
-        $("#mintBtnBlock").show();
-        $("#totalCostBlock").show();
-        $("#insufficientBalance").hide();
-      } else {
-        $("#mintBtnBlock").hide();
-        $("#totalCostBlock").hide();
-        $("#insufficientBalance").show();
-      }
-    } else {
-      $("#mintBtnBlock").show();
-      $("#totalCostBlock").show();
-      $("#insufficientBalance").hide();
-    }
-
     const mintPercent = parseFloat(minted / maxToken).toFixed(3) * 100;
     $("#mintedPercent").css("width", mintPercent.toString() + "%");
-
-    getTotalCost();
-    $("#loading").hide();
-
     toggleStakeBtns();
   }
 
   const getTotalCost = async function() {
     console.log("mint amount is ", mintAmount);
     const price = mintCost > 0 ? mintCost : currentPrice;
+    console.log("price is ", price);
     totalCost = price * mintAmount;
     if (payment == "weed" && totalCost > weedAllowance) {
       $(".approveWeedBlock").show();
@@ -275,7 +280,7 @@ import { WoolfAddress, WoolfABI, BarnAddress, BarnABI, WoolAddress, WoolABI, Mil
   const mint = async function(stake) {
     try {
       $("#loading").show();
-      const price = payment == "ether" ? totalCost : 0;
+      const price = mintCost == 0 && payment == "ether" ? totalCost : 0;
       const woolfWithSigner = WoolfContract.connect(signer);
       console.log("price is ", price);
       console.log("mintAmount is ", mintAmount);
