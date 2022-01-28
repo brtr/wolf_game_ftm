@@ -317,8 +317,8 @@ import { WoolfAddress, WoolfABI, BarnAddress, BarnABI, WoolAddress, WoolABI, Mil
       location.reload();
     } catch (err) {
       fetchErrMsg(err);
+      location.reload();
     }
-    location.reload();
   }
 
   const withdraw = async function() {
@@ -331,8 +331,8 @@ import { WoolfAddress, WoolfABI, BarnAddress, BarnABI, WoolAddress, WoolABI, Mil
       location.reload();
     } catch (err) {
       fetchErrMsg(err);
+      location.reload();
     }
-    location.reload();
   }
 
   const deposit = async function() {
@@ -347,8 +347,8 @@ import { WoolfAddress, WoolfABI, BarnAddress, BarnABI, WoolAddress, WoolABI, Mil
       location.reload();
     } catch (err) {
       fetchErrMsg(err);
+      location.reload();
     }
-    location.reload();
   }
 
   const toggleStakeBtns = function() {
@@ -468,7 +468,6 @@ import { WoolfAddress, WoolfABI, BarnAddress, BarnABI, WoolAddress, WoolABI, Mil
       toggleBlock();
     });
 
-    location.reload();
     // detect Network account change
     ethereum.on('chainChanged', function(networkId){
       console.log('networkChanged',networkId);
